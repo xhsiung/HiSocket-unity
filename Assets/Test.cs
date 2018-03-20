@@ -67,8 +67,8 @@ public class Test : MonoBehaviour
         //物件轉位元組陣列
         byte[] MemberABytes = HIUtils.ToByteArray(hinfo);
 
-	//ID=0x11,chann=0x22,data
-        byte[] data = HIUtils.JoinHeaderBytes(0x11, 0x22, MemberABytes);
+	//action=0x11,chann=0x22,id=0x33,data
+        byte[] data = HIUtils.JoinHeaderBytes(0x11, 0x22, 0x33, MemberABytes);
         _tcp.Send( data );
     }
 
@@ -83,10 +83,12 @@ public class Test : MonoBehaviour
         //Debug.Log("receive bytes: " + bytes.Length);
         //string msg = Encoding.Unicode.GetString(bytes, 0,bytes.Length);
         Debug.Log("OnReceive");
-        //ID
+        //action
         Debug.Log(bytes[0].ToString("X2")); 
         //chann
         Debug.Log(bytes[1].ToString("X2"));
+        //id
+        Debug.Log(bytes[2].ToString("X2"));
 
         byte[] data = HIUtils.SplitHeaderBytes(bytes);
         HINetworkData info = (HINetworkData)HIUtils.ToObject(data);
