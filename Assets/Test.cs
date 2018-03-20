@@ -66,6 +66,8 @@ public class Test : MonoBehaviour
 
         //物件轉位元組陣列
         byte[] MemberABytes = HIUtils.ToByteArray(hinfo);
+
+	//ID=0x11,chann=0x22,data
         byte[] data = HIUtils.JoinHeaderBytes(0x11, 0x22, MemberABytes);
         _tcp.Send( data );
     }
