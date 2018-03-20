@@ -10,21 +10,6 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
-[Serializable]
-class MemberInfo
-{
-    public int ID = 0;
-    public string Name = "";
-    public bool IsEnable = false;
-    //public List<string> LicenseList = new List<string>();
-}
-
-[Serializable]
-class DictMemberInfo
-{
-    public Dictionary<string, MemberInfo> mem = new Dictionary<string, MemberInfo>();
-}
-
 public class Test : MonoBehaviour
 {
     //private ITcp _tcp;
