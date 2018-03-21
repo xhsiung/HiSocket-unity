@@ -23,9 +23,6 @@ public class Test : MonoBehaviour
         _tcp = TcpConnection.getInstance();
         _tcp.StateChangeEvent += OnState;
         _tcp.ReceiveEvent += OnReceive;
-        Connect();
-        _tcp.TreadRun();
-        Send();
     }
 
     void Connect()
@@ -36,7 +33,8 @@ public class Test : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //_tcp.Run();
+        if (_tcp.IsConnected)
+            _tcp.Run();
     }
 
     void OnState(SocketState state)
@@ -66,9 +64,7 @@ public class Test : MonoBehaviour
 
         //物件轉位元組陣列
         byte[] MemberABytes = HIUtils.ToByteArray(hinfo);
-
-	//action=0x11,chann=0x22,id=0x33,data
-        byte[] data = HIUtils.JoinHeaderBytes(0x11, 0x22, 0x33, MemberABytes);
+        byte[] data = HIUtils.JoinHeaderBytes(0x04, 0x22, new byte[]{ 0x33, 0x44}, MemberABytes);
         _tcp.Send( data );
     }
 
@@ -87,12 +83,65 @@ public class Test : MonoBehaviour
         Debug.Log(bytes[0].ToString("X2")); 
         //chann
         Debug.Log(bytes[1].ToString("X2"));
-        //id
+
+        //ID
         Debug.Log(bytes[2].ToString("X2"));
+        Debug.Log(bytes[3].ToString("X2"));
 
         byte[] data = HIUtils.SplitHeaderBytes(bytes);
         HINetworkData info = (HINetworkData)HIUtils.ToObject(data);
         Debug.Log( info.ndada["objname1"].Name );
     }
 
+
+    //test
+    void OnGUI(){
+        if (GUI.Button(new Rect(0, 0, 100, 25), "Connect"))
+        {
+            Debug.Log("onGui Connect");
+            _tcp.Connect("127.0.0.1", 7777);
+            _tcp.ID = new byte[]{ 0x01, 0x01 };
+        }
+
+        if (GUI.Button(new Rect(0, 25, 100, 25), "DisConnect"))
+        {
+            Debug.Log("onGui DisConnect");
+            _tcp.DisConnect();
+        }
+
+        if (GUI.Button(new Rect(0, 50, 100, 25), "SubScribe"))
+        {
+            Debug.Log("onGui SubScribe");
+            _tcp.SubScribe(_tcp, 0x99);
+        }
+
+        if (GUI.Button(new Rect(0, 75, 100, 25), "UnSubscribe"))
+        {
+            Debug.Log("onGui UnSubscribe");
+            _tcp.UnSubscribe(_tcp,0x99);
+        }
+
+        if (GUI.Button(new Rect(0, 100, 100, 25), "Send"))
+        {
+            Debug.Log("onGui Send"); 
+
+            HINetworkData hinfo = new HINetworkData();
+            HINetworkItem item = new HINetworkItem();
+            item.ID = 123;
+            item.Name = "myalex";
+            hinfo.ndada.Add("objname1", item);
+
+            //物件轉位元組陣列
+            byte[] MemberABytes = HIUtils.ToByteArray(hinfo);
+            _tcp.HISend(_tcp,0x99, MemberABytes);
+        }
+
+        if (GUI.Button(new Rect(0, 125, 100, 25), "TEST"))
+        {
+            Debug.Log("onGui TEST");
+            _tcp.HISend(_tcp, 0x99, new byte[]{0x11});
+        }
+
+    }
 }
+

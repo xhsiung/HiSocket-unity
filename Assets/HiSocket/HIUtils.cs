@@ -28,19 +28,23 @@ namespace HiSocket
             }
         }
 
-        //1byte(ID) + 1byte(chann) + byte(data)
-        public static byte[] JoinHeaderBytes(byte ID , byte chann , byte[] data){
-            byte[] newArray = new byte[data.Length + 2];
-            data.CopyTo(newArray, 2);
-            newArray[0] = ID;
+        //1byte(Action) + 1byte(chann) + 1byte(ID) + byte(data)
+        public static byte[] JoinHeaderBytes(byte action , byte chann , byte[] ids, byte[] data){
+            int offset = 4;
+            byte[] newArray = new byte[data.Length + offset];
+            data.CopyTo(newArray, offset);
+            newArray[0] = action;
             newArray[1] = chann;
+            newArray[2] = ids[0];
+            newArray[3] = ids[1];
             return newArray;
         }
 
-        //1byte(ID) + 1byte(chann) + byte(data)
+        //1byte(Action) + 1byte(chann) + 1byte(ID) + byte(data)
         public static byte[] SplitHeaderBytes(byte[] data){
-            var newArray = new byte[data.Length - 2];
-            Array.Copy(data, 2, newArray, 0, data.Length - 2);
+            int offset = 4;
+            var newArray = new byte[data.Length - offset];
+            Array.Copy(data, offset , newArray, 0, data.Length - offset);
             return newArray;
         }
 

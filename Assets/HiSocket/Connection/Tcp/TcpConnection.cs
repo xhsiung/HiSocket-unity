@@ -19,8 +19,14 @@ namespace HiSocket
         private string ip = "127.0.0.1";
         private int port = 1234;
 
+        public static byte CONNECT = 0x00;
+        public static byte DISCONNECT = 0x01;
+        public static byte SUBSCIRUBE = 0x02;
+        public static byte UNSUBSCIRUBE = 0x03;
+        public static byte SEND = 0x04;
+
         public int delay = 200;
-        private Thread HIRun = null;
+        public byte[] ID = {0x00,0x00};
 
         public static TcpConnection instance = null;
         public static TcpConnection getInstance(){
@@ -32,7 +38,6 @@ namespace HiSocket
 
         ~TcpConnection(){
             _socket.Disconnect(true);
-            HIRun.Abort();
             instance = null;
         }
 
@@ -55,7 +60,7 @@ namespace HiSocket
             _iPackage = iPackage;
         }
 
-        public override void Connect(string ip, int port)
+        public override void Connect(string ip, int port )
         {
             this.ip = ip;
             this.port = port;
@@ -89,23 +94,13 @@ namespace HiSocket
                     }
                 }, _socket);
 
+                //alex add
+                //TreadRun();
             }
             catch (Exception e)
             {
                 ChangeState(SocketState.DisConnected);
                 throw new Exception(e.ToString());
-            }
-        }
-
-        public void TreadRun(){
-            HIRun = new Thread(uiRun);
-            HIRun.Start();
-        }
-
-        public void uiRun(){
-            while( true ){
-                Thread.Sleep(delay);
-                Run();
             }
         }
 
@@ -127,6 +122,23 @@ namespace HiSocket
                     Reconnected();
                 }
         }
+
+        public void SubScribe(TcpConnection conn,byte chann){
+            byte[] xdata = HIUtils.JoinHeaderBytes( TcpConnection.SUBSCIRUBE, chann, this.ID, new byte[]{0x00}) ;
+            conn.Send(xdata);
+        }
+         
+        public void UnSubscribe(TcpConnection conn,byte chann){
+            byte[] xdata = HIUtils.JoinHeaderBytes( TcpConnection.UNSUBSCIRUBE, chann, new byte[]{0x00,0x00}, new byte[] { 0x00 });
+            conn.Send(xdata);
+        }
+
+        public void HISend(TcpConnection conn,byte chann, byte[] data){
+            byte[] xdata = HIUtils.JoinHeaderBytes( TcpConnection.SEND, chann, this.ID, data );
+            conn.Send(xdata);
+        }
+
+
 
         //alex add detect Connections
         public bool IsDisConnected()
@@ -186,6 +198,7 @@ namespace HiSocket
                 }
             }
         }
+
 
         protected override void Receive()
         {
