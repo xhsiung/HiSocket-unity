@@ -123,17 +123,17 @@ namespace HiSocket
                 }
         }
 
-        public void SubScribe(TcpConnection conn,byte chann){
+        public void SubScribe(ref TcpConnection conn,byte chann){
             byte[] xdata = HIUtils.JoinHeaderBytes( TcpConnection.SUBSCIRUBE, chann, this.ID, new byte[]{0x00}) ;
             conn.Send(xdata);
         }
          
-        public void UnSubscribe(TcpConnection conn,byte chann){
+        public void UnSubscribe(ref TcpConnection conn,byte chann){
             byte[] xdata = HIUtils.JoinHeaderBytes( TcpConnection.UNSUBSCIRUBE, chann, new byte[]{0x00,0x00}, new byte[] { 0x00 });
             conn.Send(xdata);
         }
 
-        public void HISend(TcpConnection conn,byte chann, byte[] data){
+        public void HISend(ref TcpConnection conn,byte chann, byte[] data){
             byte[] xdata = HIUtils.JoinHeaderBytes( TcpConnection.SEND, chann, this.ID, data );
             conn.Send(xdata);
         }
@@ -143,8 +143,14 @@ namespace HiSocket
         //alex add detect Connections
         public bool IsDisConnected()
         {
-            bool part1 = _socket.Poll(3000, SelectMode.SelectRead);
-            bool part2 = (_socket.Available == 0);
+            bool part1 = false;
+            bool part2 = false;
+            try{
+                part1 = _socket.Poll(3000, SelectMode.SelectRead);
+                part2 = (_socket.Available == 0);    
+            }catch (Exception e){
+                return false;   
+            }
             return ((part1 && part2) || !_socket.Connected)? true: false;
         }
 
