@@ -31,7 +31,8 @@ namespace HiSocket
         public static TcpConnection instance = null;
         public static TcpConnection getInstance(){
             if ( instance == null){                 
-                return  new TcpConnection( new Packer() );
+                instance = new TcpConnection( new Packer() );
+                return instance;
             }
             return instance;
         }
@@ -93,9 +94,6 @@ namespace HiSocket
                         throw new Exception("socket is null or isconnected is false");
                     }
                 }, _socket);
-
-                //alex add
-                //TreadRun();
             }
             catch (Exception e)
             {
@@ -138,20 +136,21 @@ namespace HiSocket
             conn.Send(xdata);
         }
 
-
-
         //alex add detect Connections
         public bool IsDisConnected()
         {
             bool part1 = false;
             bool part2 = false;
-            try{
+            try
+            {
                 part1 = _socket.Poll(3000, SelectMode.SelectRead);
-                part2 = (_socket.Available == 0);    
-            }catch (Exception e){
-                return false;   
+                part2 = (_socket.Available == 0);
+                return ((part1 && part2) || !_socket.Connected) ? true : false;
             }
-            return ((part1 && part2) || !_socket.Connected)? true: false;
+            catch (Exception e)
+            {
+                return false;
+            }
         }
 
         public void Reconnected(){
