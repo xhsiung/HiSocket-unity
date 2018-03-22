@@ -55,8 +55,8 @@ public class Test : MonoBehaviour
 
     void Send()
     {
-        HINetworkData hinfo = new HINetworkData();
-        HINetworkItem item = new HINetworkItem();
+        HiNetworkData hinfo = new HiNetworkData();
+        HiNetworkItem item = new HiNetworkItem();
         item.ID = 123;
         item.Name = "myalex";
         hinfo.ndada.Add("objname1", item);
@@ -88,7 +88,7 @@ public class Test : MonoBehaviour
         Debug.Log(bytes[3].ToString("X2"));
 
         byte[] data = HIUtils.SplitHeaderBytes(bytes);
-        HINetworkData info = (HINetworkData)HIUtils.ToObject(data);
+        HiNetworkData info = (HiNetworkData)HIUtils.ToObject(data);
         Debug.Log( info.ndada["objname1"].Name );
     }
 
@@ -111,36 +111,35 @@ public class Test : MonoBehaviour
         if (GUI.Button(new Rect(0, 50, 100, 25), "SubScribe"))
         {
             Debug.Log("onGui SubScribe");
-            _tcp.SubScribe(ref _tcp, 0x99);
+            _tcp.SubScribe(0x99);
         }
 
         if (GUI.Button(new Rect(0, 75, 100, 25), "UnSubscribe"))
         {
             Debug.Log("onGui UnSubscribe");
-            _tcp.UnSubscribe(ref _tcp,0x99);
+            _tcp.UnSubscribe(0x99);
         }
 
         if (GUI.Button(new Rect(0, 100, 100, 25), "Send"))
         {
             Debug.Log("onGui Send"); 
 
-            HINetworkData hinfo = new HINetworkData();
-            HINetworkItem item = new HINetworkItem();
+            HiNetworkData hinfo = new HiNetworkData();
+            HiNetworkItem item = new HiNetworkItem();
             item.ID = 123;
             item.Name = "myalex";
             hinfo.ndada.Add("objname1", item);
 
             //物件轉位元組陣列
             byte[] MemberABytes = HIUtils.ToByteArray(hinfo);
-            _tcp.HISend(ref _tcp,0x99, MemberABytes);
+            _tcp.HiSend(0x99, MemberABytes);
         }
 
         if (GUI.Button(new Rect(0, 125, 100, 25), "TEST"))
         {
             Debug.Log("onGui TEST");
-            _tcp.HISend(ref _tcp, 0x99, new byte[]{0x11});
+            _tcp.HiSend(0x99, new byte[]{0x11});
         }
-
     }
 }
 
