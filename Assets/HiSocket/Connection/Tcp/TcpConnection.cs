@@ -121,17 +121,20 @@ namespace HiSocket
                 }
         }
 
-        public void SubScribe(ref TcpConnection conn,byte chann){
+        public void SubScribe(byte chann){
+            TcpConnection conn = TcpConnection.getInstance();
             byte[] xdata = HIUtils.JoinHeaderBytes( TcpConnection.SUBSCIRUBE, chann, this.ID, new byte[]{0x00}) ;
             conn.Send(xdata);
         }
          
-        public void UnSubscribe(ref TcpConnection conn,byte chann){
+        public void UnSubscribe(byte chann){
+            TcpConnection conn = TcpConnection.getInstance();
             byte[] xdata = HIUtils.JoinHeaderBytes( TcpConnection.UNSUBSCIRUBE, chann, new byte[]{0x00,0x00}, new byte[] { 0x00 });
             conn.Send(xdata);
         }
 
-        public void HISend(ref TcpConnection conn,byte chann, byte[] data){
+        public void HiSend(byte chann, byte[] data){
+            TcpConnection conn = TcpConnection.getInstance();
             byte[] xdata = HIUtils.JoinHeaderBytes( TcpConnection.SEND, chann, this.ID, data );
             conn.Send(xdata);
         }
